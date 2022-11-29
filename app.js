@@ -30,6 +30,16 @@ const StorageCtrl = (function(){
                 items[id]=newItem
                 localStorage.setItem("items", JSON.stringify(items))
             }
+        },
+        delItemFromLS: function(id){
+            if(localStorage.getItem("items") === null){
+
+            } else {
+                let items;
+                items = JSON.parse(localStorage.getItem("items"))
+                items.splice(id,1)
+                localStorage.setItem("items", JSON.stringify(items))
+            }
         }
 }})();
 
@@ -96,7 +106,8 @@ const UICtrl = (function(){
         itemCaloriesInput: "#item-calories",
         addBtn: ".add-btn",
         totalCalories: ".total-calories",
-        updateBtn: ".update-btn"
+        updateBtn: ".update-btn",
+        delBtn:".del-btn"
     }
     return {
         populateItemList: function(items){
@@ -145,6 +156,7 @@ const App = (function(ItemCtrl,StorageCtrl,UICtrl){
         document.querySelector("ul").addEventListener("click", itemMealUpdate);
         document.querySelector(UISelectors.updateBtn).addEventListener("click", mealUpdate);
         document.addEventListener("DOMContentLoaded", getItemsFromLS)
+        document.querySelector(UISelectors.delBtn).addEventListener("click", delItem)
     }
     const itemAddSubmit = function(event){
         const input = UICtrl.getItemInput()
@@ -164,12 +176,12 @@ const App = (function(ItemCtrl,StorageCtrl,UICtrl){
                 document.querySelector(UISelectors.updateBtn).style.display= "inline"
                 document.querySelector(UISelectors.addBtn).style.display= "none"
                 // StorageCtrl.storeItem(newItem)
-                console.log(event.target.parentElement.parentElement)
                 event.target.parentElement.parentElement.id = "item-update"
             }
         }
         const mealUpdate = function(){
             const input = UICtrl.getItemInput()
+            const UISelectors = UICtrl.getSelectors()
             const newItem = ItemCtrl.addItem(input.name, input.calories)
             if (input.name !== '' && input.calories !== '') {
                 const list = document.querySelector("#item-list")
@@ -180,7 +192,19 @@ const App = (function(ItemCtrl,StorageCtrl,UICtrl){
                 document.querySelector("#item-update").id = `item-${newID}`
                 newItem.id = newID
                 StorageCtrl.changeItemFromLS(newID, newItem)
+                document.querySelector(UISelectors.addBtn).style.display= "inline"
+                document.querySelector(UISelectors.updateBtn).style.display= "none"
             }
+        }
+        const delItem = function(){
+            const list = document.querySelector("#item-list")
+            const UISelectors = UICtrl.getSelectors()
+            var nodes = Array.from(list.children)
+            delID = nodes.indexOf(document.querySelector("#item-update"))
+            StorageCtrl.delItemFromLS(delID)
+            list.removeChild(list.children[delID])
+            document.querySelector(UISelectors.addBtn).style.display= "inline"
+            document.querySelector(UISelectors.updateBtn).style.display= "none"
         }
     }
     const getItemsFromLS = function(){
