@@ -1,6 +1,6 @@
-const StorageCtrl = (function(){
+const StorageCtrl = (function() {
     return{
-        storeItem:function(item){
+        storeItem:function(item) {
             let items
             if(localStorage.getItem("items") === null){
                 items = []
@@ -12,17 +12,17 @@ const StorageCtrl = (function(){
                 localStorage.setItem("items", JSON.stringify(items))
             }
         },
-        getItemsFromLS:function(){
+        getItemsFromLS:function() {
             let items;
-            if(localStorage.getItem("items") === null){
+            if(localStorage.getItem("items") === null) {
                 items = []
             } else {
                 items = JSON.parse(localStorage.getItem("items"))
             }
             return items
         }(),
-        changeItemFromLS: function(id, newItem){
-            if(localStorage.getItem("items") === null){
+        changeItemFromLS: function(id, newItem) {
+            if(localStorage.getItem("items") === null) {
 
             } else {
                 let items;
@@ -31,8 +31,8 @@ const StorageCtrl = (function(){
                 localStorage.setItem("items", JSON.stringify(items))
             }
         },
-        delItemFromLS: function(id){
-            if(localStorage.getItem("items") === null){
+        delItemFromLS: function(id) {
+            if(localStorage.getItem("items") === null) {
 
             } else {
                 let items;
@@ -41,9 +41,11 @@ const StorageCtrl = (function(){
                 localStorage.setItem("items", JSON.stringify(items))
             }
         }
-}})();
+    }})();
 
-const ItemCtrl = (function(){
+
+
+const ItemCtrl = (function() {
     const Item = function(id,name,calories){
         this.id = id
         this.name = name
@@ -52,19 +54,19 @@ const ItemCtrl = (function(){
 
     const data = {
         items: [
-            {id:0, name:"Steak", calories: 1200},
-            {id:1, name:"Cookie", calories: 400},
-            {id:2, name:"eg", calories: 300}
+            // {id:0, name:"Bacon", calories: 1200},
+            // {id:1, name:"Eggs", calories: 400},
+            // {id:2, name:"Apple", calories: 300}
         ],
         total: 0,
         currentItem: null
     }
 
-    return{
-        getItems: function(){
+    return {
+        getItems: function() {
             return data.items
         },
-        addItem: function(name, calories){
+        addItem: function(name, calories) {
             let ID;
             if(data.items.length >0){
                 ID = data.items[data.items.length-1].id + 1
@@ -87,20 +89,22 @@ const ItemCtrl = (function(){
             console.log(data.total)
             return data.total
         },
-        logData: function(){
+        logData: function() {
             return data
         },
-        changeName: function(name){
+        changeName: function(name) {
             this.name = name
         },
-        changeCalorie: function(calories){
+        changeCalorie: function(calories) {
             this.calories = calories
         }
     }
 })();
+
+
+
 const UICtrl = (function(){
     const UISelectors = {
-        itemList: "#item-list",
         itemList: "#item-list",
         itemNameInput: "#item-name",
         itemCaloriesInput: "#item-calories",
@@ -149,6 +153,10 @@ const UICtrl = (function(){
         },
     }
 })();
+
+
+
+
 const App = (function(ItemCtrl,StorageCtrl,UICtrl){
     const loadEventListeners = function(){
         const UISelectors = UICtrl.getSelectors()
@@ -158,9 +166,9 @@ const App = (function(ItemCtrl,StorageCtrl,UICtrl){
         document.addEventListener("DOMContentLoaded", getItemsFromLS)
         document.querySelector(UISelectors.delBtn).addEventListener("click", delItem)
     }
-    const itemAddSubmit = function(event){
+    const itemAddSubmit = function(event) {
         const input = UICtrl.getItemInput()
-        if(input.name !== '' && input.calories !== ''){
+        if (input.name !== '' && input.calories !== '') {
             const newItem = ItemCtrl.addItem(input.name, input.calories)
             console.log(newItem)
             UICtrl.addListItem(newItem)
@@ -170,42 +178,42 @@ const App = (function(ItemCtrl,StorageCtrl,UICtrl){
             UICtrl.clearInput()
         }
         event.preventDefault()
-        const itemMealUpdate = function(event){
-            const UISelectors = UICtrl.getSelectors()
-            if(event.target.className === "edit-item fa fa-pencil"){
-                document.querySelector(UISelectors.updateBtn).style.display= "inline"
-                document.querySelector(UISelectors.addBtn).style.display= "none"
-                // StorageCtrl.storeItem(newItem)
-                event.target.parentElement.parentElement.id = "item-update"
-            }
+    }
+    const itemMealUpdate = function(event){
+        const UISelectors = UICtrl.getSelectors()
+        if(event.target.className === "edit-item fa fa-pencil"){
+            document.querySelector(UISelectors.updateBtn).style.display= "inline"
+            document.querySelector(UISelectors.addBtn).style.display= "none"
+            // StorageCtrl.storeItem(newItem)
+            event.target.parentElement.parentElement.id = "item-update"
         }
-        const mealUpdate = function(){
-            const input = UICtrl.getItemInput()
-            const UISelectors = UICtrl.getSelectors()
-            const newItem = ItemCtrl.addItem(input.name, input.calories)
-            if (input.name !== '' && input.calories !== '') {
-                const list = document.querySelector("#item-list")
-                var nodes = Array.from(list.children)
-                newID = nodes.indexOf(document.querySelector("#item-update"))
-                const updateItem =`<strong>${newItem.name}: </strong> <em>${newItem.calories} Calories</em> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a>`
-                document.querySelector("#item-update").innerHTML = updateItem
-                document.querySelector("#item-update").id = `item-${newID}`
-                newItem.id = newID
-                StorageCtrl.changeItemFromLS(newID, newItem)
-                document.querySelector(UISelectors.addBtn).style.display= "inline"
-                document.querySelector(UISelectors.updateBtn).style.display= "none"
-            }
-        }
-        const delItem = function(){
+    }
+    const mealUpdate = function(){
+        const input = UICtrl.getItemInput()
+        const UISelectors = UICtrl.getSelectors()
+        const newItem = ItemCtrl.addItem(input.name, input.calories)
+        if (input.name !== '' && input.calories !== '') {
             const list = document.querySelector("#item-list")
-            const UISelectors = UICtrl.getSelectors()
             var nodes = Array.from(list.children)
-            delID = nodes.indexOf(document.querySelector("#item-update"))
-            StorageCtrl.delItemFromLS(delID)
-            list.removeChild(list.children[delID])
+            newID = nodes.indexOf(document.querySelector("#item-update"))
+            const updateItem =`<strong>${newItem.name}: </strong> <em>${newItem.calories} Calories</em> <a href="#" class="secondary-content"><i class="edit-item fa fa-pencil"></i></a>`
+            document.querySelector("#item-update").innerHTML = updateItem
+            document.querySelector("#item-update").id = `item-${newID}`
+            newItem.id = newID
+            StorageCtrl.changeItemFromLS(newID, newItem)
             document.querySelector(UISelectors.addBtn).style.display= "inline"
             document.querySelector(UISelectors.updateBtn).style.display= "none"
         }
+    }
+    const delItem = function(){
+        const list = document.querySelector("#item-list")
+        const UISelectors = UICtrl.getSelectors()
+        var nodes = Array.from(list.children)
+        delID = nodes.indexOf(document.querySelector("#item-update"))
+        StorageCtrl.delItemFromLS(delID)
+        list.removeChild(list.children[delID])
+        document.querySelector(UISelectors.addBtn).style.display= "inline"
+        document.querySelector(UISelectors.updateBtn).style.display= "none"
     }
     const getItemsFromLS = function(){
         const items = StorageCtrl.getItemsFromLS
@@ -225,4 +233,5 @@ const App = (function(ItemCtrl,StorageCtrl,UICtrl){
         }
     }
 })(ItemCtrl,StorageCtrl, UICtrl)
+
 App.init()
